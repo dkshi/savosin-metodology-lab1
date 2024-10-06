@@ -2,43 +2,45 @@ package src
 
 import "fmt"
 
+type GamePipeline []Game
+
 type Game interface {
 	startGame() (question string, answer int)
 }
 
-type CLI struct {
+type GameEngine struct {
 	username string
 }
 
-func NewCLI() *CLI {
-	return &CLI{}
+func NewGameEngine() *GameEngine {
+	return &GameEngine{}
 }
 
-func (c *CLI) Greeting() (err error) {
+func (e *GameEngine) Greeting() (err error) {
 	fmt.Println("Welcome to the Brain Games!")
 	fmt.Print("May I have your Name? ")
-	_, err = fmt.Scan(&c.username)
+	_, err = fmt.Scan(&e.username)
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf("Hello, %s", c.username)
+	fmt.Printf("Hello, %s", e.username)
 
 	return nil
 }
 
-func (c *CLI) RunGamesPipeline(games []Game) (err error) {
+func (e *GameEngine) RunGamesPipeline(games GamePipeline) (err error) {
 	for _, game := range games {
-		err = c.playGame(game)
+		err = e.playGame(game)
 		if err != nil {
 			return err
 		}
 	}
-	fmt.Printf("Congratulations, %s!", c.username)
+	fmt.Printf("Congratulations, %s!", e.username)
 	return nil
 }
 
-func (c *CLI) playGame(game Game) (err error) {
+func (e *GameEngine) playGame(game Game) (err error) {
 	question, answer := game.startGame()
 
 	var userAnswer int
@@ -51,8 +53,8 @@ func (c *CLI) playGame(game Game) (err error) {
 
 	if userAnswer != answer {
 		fmt.Printf("'%d' is wrong answer ;(. Correct answer was '%d'\n", userAnswer, answer)
-		fmt.Printf("Let's try again, %s\n", c.username)
-		return c.playGame(game)
+		fmt.Printf("Let's try again, %s\n", e.username)
+		return e.playGame(game)
 	}
 
 	fmt.Println("Correct!")
